@@ -11,7 +11,7 @@ beforeEach(() => seed(testData))
 describe('GET /api/topics', () => { 
   test('returns 200 and a list of topics', () => { 
     return request(app)
-      .get("api/treasures")
+      .get("/api/topics")
       .expect(200)
       .then(({ body: { topics } }) => { 
         expect(topics).toEqual([
