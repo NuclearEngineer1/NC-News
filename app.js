@@ -11,8 +11,18 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 
 app.use((err, req, res, next) => {
-  console.log(err);
-  res.sendStatus(500).send({ msg: "Internal Server Error" });
+  if (err.code === '22P02') { 
+    res.status(400)
+    res.send({ msg: 'bad request' })
+  } else {
+    next(err)
+  }
+}) 
+
+app.use((err, req, res, next) => {
+  console.log(err)
+  res.status(500)
+  res.send({ msg: "Internal Server Error" });
 });
 
 module.exports = app;

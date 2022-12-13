@@ -62,8 +62,8 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/7")
       .expect(200)
-      .then(({ body: { article } }) => {
-        expect(article).toEqual({
+      .then(({ body: { articles } }) => {
+        expect(articles).toEqual([{
           article_id: 7,
           title: "Z",
           topic: "mitch",
@@ -71,15 +71,23 @@ describe("GET /api/articles/:article_id", () => {
           body: "I was hungry.",
           created_at: "2020-01-07T14:08:00.000Z",
           votes: 0,
-        });
+        }]);
       });
   });
-  // test("responds with 400 when given invalid article_id", () => {
-  //   return request(app)
-  //     .get("/api/articles/banana")
-  //     .expect(400)
-  //     .then(({ body: { msg } }) => {
-  //       expect(msg).toEqual("bad request")
-  //     });
-  // });
+  test("responds with 400 when given invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/banana")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("responds with 404 when given valid but non existent article_id", () => {
+    return request(app)
+      .get("/api/articles/1000000")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("article does not exist");
+      });
+  });
 });

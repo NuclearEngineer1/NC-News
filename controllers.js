@@ -1,12 +1,14 @@
-const {selectTopics, selectArticles, selectArticleById} = require('./models')
+const { selectTopics, selectArticles, selectArticleById } = require("./models");
 
 exports.getTopics = (req, res, next) => {
-  selectTopics().then((topics) => {
-    res.send({ topics })
-  }).catch((err) => {
-    next(err)
-  })
-}
+  selectTopics()
+    .then((topics) => {
+      res.send({ topics });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
 
 exports.getArticles = (req, res, next) => {
   selectArticles()
@@ -20,12 +22,15 @@ exports.getArticles = (req, res, next) => {
 
 exports.getArticleById = (req, res, next) => {
   selectArticleById(req)
-    .then((article) => {
-      res.send({ article });
+    .then((articleRows) => {
+      if (articleRows.length !== 0) {
+        res.send({ articles: articleRows });
+      } else {
+        res.status(404)
+        res.send({ msg: "article does not exist" });
+      }
     })
     .catch((err) => {
       next(err);
     });
 };
-
-
