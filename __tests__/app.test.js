@@ -34,10 +34,10 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-        // expect(articles).toBeSortedBy("created_at", {
-        //   descending: true,
-        //   coerce: true,
-        // });
+        expect(articles).toBeSortedBy("created_at", {
+          descending: true,
+          coerce: true,
+        });
         expect(articles).toBeInstanceOf(Array);
         expect(articles).toHaveLength(12);
         articles.forEach((article) => {
@@ -55,4 +55,31 @@ describe("GET /api/articles", () => {
         });
       });
   });
+});
+
+describe("GET /api/articles/:article_id", () => {
+  test("responds with 200 and corresonding article", () => {
+    return request(app)
+      .get("/api/articles/7")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual({
+          article_id: 7,
+          title: "Z",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "I was hungry.",
+          created_at: "2020-01-07T14:08:00.000Z",
+          votes: 0,
+        });
+      });
+  });
+  // test("responds with 400 when given invalid article_id", () => {
+  //   return request(app)
+  //     .get("/api/articles/banana")
+  //     .expect(400)
+  //     .then(({ body: { msg } }) => {
+  //       expect(msg).toEqual("bad request")
+  //     });
+  // });
 });
