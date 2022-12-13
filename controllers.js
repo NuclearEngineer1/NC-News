@@ -1,4 +1,9 @@
-const { selectTopics, selectArticles, selectArticleById } = require("./models");
+const {
+  selectTopics,
+  selectArticles,
+  selectArticleById,
+  selectCommentsByArticleId,
+} = require("./models");
 
 exports.getTopics = (req, res, next) => {
   selectTopics()
@@ -26,9 +31,19 @@ exports.getArticleById = (req, res, next) => {
       if (articleRows.length !== 0) {
         res.send({ articles: articleRows });
       } else {
-        res.status(404)
+        res.status(404);
         res.send({ msg: "article does not exist" });
       }
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getCommentsByArticleId = (req, res, next) => {
+  selectCommentsByArticleId(req)
+    .then((comments) => {
+        res.send({ comments });
     })
     .catch((err) => {
       next(err);

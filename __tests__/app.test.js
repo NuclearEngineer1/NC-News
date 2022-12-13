@@ -63,15 +63,17 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/7")
       .expect(200)
       .then(({ body: { articles } }) => {
-        expect(articles).toEqual([{
-          article_id: 7,
-          title: "Z",
-          topic: "mitch",
-          author: "icellusedkars",
-          body: "I was hungry.",
-          created_at: "2020-01-07T14:08:00.000Z",
-          votes: 0,
-        }]);
+        expect(articles).toEqual([
+          {
+            article_id: 7,
+            title: "Z",
+            topic: "mitch",
+            author: "icellusedkars",
+            body: "I was hungry.",
+            created_at: "2020-01-07T14:08:00.000Z",
+            votes: 0,
+          },
+        ]);
       });
   });
   test("responds with 400 when given invalid article_id", () => {
@@ -91,3 +93,46 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("responds with 200 and corresonding comment array", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(11);
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              author: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              body: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  test("responds with 400 when given invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/banana/comments")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("responds with 404 when given valid but non existent article_id", () => {
+    return request(app)
+      .get("/api/articles/1000000/comments")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe(
+          "either the article does not exist or it has no comments"
+        );
+      });
+  });
+});
+
+

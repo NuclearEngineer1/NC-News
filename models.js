@@ -32,8 +32,25 @@ exports.selectArticles = () => {
 
 exports.selectArticleById = (req) => {
   const article_id = req.params.article_id;
-  return db.query("SELECT * FROM articles WHERE article_id = $1", [article_id])
-    .then(article => {
-    return article.rows
-  })
-}
+  return db
+    .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
+    .then((article) => {
+      return article.rows;
+    });
+};
+
+exports.selectCommentsByArticleId = (req) => {
+  const article_id = req.params.article_id;
+  return db
+    .query("SELECT * FROM comments WHERE article_id = $1", [article_id])
+    .then((comments) => {
+      if (comments.rowCount === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "either the article does not exist or it has no comments",
+        });
+      } else {
+        return comments.rows;
+      }
+    });
+};
