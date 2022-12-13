@@ -34,10 +34,10 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-        // expect(articles).toBeSortedBy("created_at", {
-        //   descending: true,
-        //   coerce: true,
-        // });
+        expect(articles).toBeSortedBy("created_at", {
+          descending: true,
+          coerce: true,
+        });
         expect(articles).toBeInstanceOf(Array);
         expect(articles).toHaveLength(12);
         articles.forEach((article) => {
