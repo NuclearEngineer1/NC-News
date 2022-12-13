@@ -62,16 +62,17 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/7")
       .expect(200)
-      .then(({ body: { articles } }) => {
-        expect(articles).toEqual([{
+      .then(({ body: { article } }) => {
+        expect(article[0]).toEqual(
+          expect.objectContaining({
           article_id: 7,
           title: "Z",
           topic: "mitch",
           author: "icellusedkars",
           body: "I was hungry.",
           created_at: "2020-01-07T14:08:00.000Z",
-          votes: 0,
-        }]);
+          votes: 0
+        }));
       });
   });
   test("responds with 400 when given invalid article_id", () => {

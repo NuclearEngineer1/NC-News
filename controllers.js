@@ -22,13 +22,8 @@ exports.getArticles = (req, res, next) => {
 
 exports.getArticleById = (req, res, next) => {
   selectArticleById(req)
-    .then((articleRows) => {
-      if (articleRows.length !== 0) {
-        res.send({ articles: articleRows });
-      } else {
-        res.status(404)
-        res.send({ msg: "article does not exist" });
-      }
+    .then((response) => { 
+      res.send(response)
     })
     .catch((err) => {
       next(err);
