@@ -94,7 +94,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
-describe.only("GET /api/articles/:article_id/comments", () => {
+describe("GET /api/articles/:article_id/comments", () => {
   test("responds with 200 and corresonding comment array", () => {
     return request(app)
       .get("/api/articles/1/comments")
@@ -133,16 +133,17 @@ describe.only("GET /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe(
-          "either the article does not exist or it has no comments"
+          "article not found"
         );
       });
   });
-  test.only("responds with 200 and [] when article has no comments", () => {
+  test("responds with 200 and [] when article has no comments", () => {
     return request(app)
       .get("/api/articles/7/comments")
-      .expect(404)
-      .then(({ body: {comments} }) => {
+      .expect(200)
+      .then(({ body: { comments } }) => {
         expect(comments).toEqual([])
       });
   });
-});
+})
+
