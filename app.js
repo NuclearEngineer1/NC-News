@@ -10,7 +10,6 @@ const {
 } = require("./controllers");
 
 const app = express();
-app.use(express.json());
 
 app.get("/api/topics", getTopics);
 
@@ -39,8 +38,15 @@ app.use((err, req, res, next) => {
   next(err);
 });
 
+  if (err.msg !== undefined) {
+    res.status(err.status).send({ msg: err.msg });
+  } else {
+    next(err);
+  }
+});
+
 app.use((err, req, res, next) => {
-  res.status(500);
+  res.status(500)
   res.send({ msg: "Internal Server Error" });
 });
 
