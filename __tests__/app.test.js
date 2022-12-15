@@ -137,6 +137,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         );
       });
   });
+
   test("responds with 200 and [] when article has no comments", () => {
     return request(app)
       .get("/api/articles/7/comments")
