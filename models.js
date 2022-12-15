@@ -56,24 +56,14 @@ exports.selectCommentsByArticleId = (req) => {
     });
 };
 
-exports.insertCommentByArticleId = (req) => {
+exports.insertCommentByArticleId = (article_id, postRequest) => {
   const commentInsertSQL = format(
     `INSERT INTO comments (body, author, article_id) VALUES %L RETURNING *;`,
-    [[req.body.body, req.body.username, req.params.article_id]]
+    [[postRequest.body, postRequest.username, article_id]]
   );
-  const article_id = req.params.article_id;
-  const articleQuery = db.query(
-    "SELECT * FROM articles WHERE article_id = $1",
-    [article_id]
+  return db.query(commentInsertSQL).then((comment) => {
+    return comment.rows[0]
+  }
   );
-  const commentQuery = db.query(commentInsertSQL);
-  return Promise.all([articleQuery, commentQuery]).then((queryArray) => {
-    if (queryArray[0].rowCount === 0) {
-      console.log(queryArray[1].rows[0]);
-      return Promise.reject({ status: 404, message: "article not found" });
-    } else {
-      console.log(queryArray[1].rows[0]);
-      return queryArray[1].rows[0];
-    }
-  });
+
 };

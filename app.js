@@ -5,6 +5,8 @@ const {
   getArticleById,
   getCommentsByArticleId,
   postCommentByArticleId,
+  handlePSQL400s,
+  handlePSQL404s
 } = require("./controllers");
 
 const app = express();
@@ -30,18 +32,14 @@ app.use((err, req, res, next) => {
 
 app.use((err, req, res, next) => {
   if (err.code === "22P02" || err.code === "23502") {
-    console.log(err);
-    res.status(400);
-    res.send({ msg: "bad request" });
+    handlePSQL400s(res)
   } else if ((err.code = "23503")) {
-    res.status(404);
-    res.send({ msg: "not found" });
+    handlePSQL404s(res)
   }
   next(err);
 });
 
 app.use((err, req, res, next) => {
-  console.log(err);
   res.status(500);
   res.send({ msg: "Internal Server Error" });
 });
