@@ -6,7 +6,8 @@ const {
   getCommentsByArticleId,
   postCommentByArticleId,
   handlePSQL400s,
-  handlePSQL404s
+  handlePSQL404s,
+  patchVotesByArticleId,
 } = require("./controllers");
 
 
@@ -23,6 +24,8 @@ app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
+
+app.patch("/api/articles/:article_id", patchVotesByArticleId)
 
 app.use((err, req, res, next) => {
   if (err.msg) {
