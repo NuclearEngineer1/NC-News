@@ -132,9 +132,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/1000000/comments")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe(
-          "article not found"
-        );
+        expect(msg).toBe("article not found");
       });
   });
 
@@ -143,19 +141,90 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/7/comments")
       .expect(200)
       .then(({ body: { comments } }) => {
-        expect(comments).toEqual([])
+        expect(comments).toEqual([]);
       });
   });
-    test("responds with 404 when user does not exist", () => {
-      return request(app)
-        .post("/api/articles/1/comments")
-        .send({
-          username: "madman123",
-          body: "this article sucks",
-        })
-        .expect(404)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe("not found");
-        });
-    });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("responds with 201 and corresonding comment", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "butter_bridge",
+        body: "this article sucks",
+      })
+      .expect(201)
+      .then(({ body: comment }) => {
+        expect(comment).toBeInstanceOf(Object);
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            author: "butter_bridge",
+            created_at: expect.any(String),
+            votes: 0,
+            body: "this article sucks",
+          })
+        );
+      });
+  });
+  test("responds with 400 when given invalid article_id", () => {
+    return request(app)
+      .post("/api/articles/banana/comments")
+      .send({
+        username: "butter_bridge",
+        body: "this article sucks",
+      })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("responds with 404 when given valid but non existent article_id", () => {
+    return request(app)
+      .post("/api/articles/1000000/comments")
+      .send({
+        username: "",
+        body: "this article sucks",
+      })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+  test("responds with 400 when missing a property", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "butter_bridge",
+      })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("responds with 400 when property in wrong data type", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "butter_bridge",
+        body: null,
+      })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("responds with 404 when user does not exist", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "madman123",
+        body: "this article sucks",
+      })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
 });

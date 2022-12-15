@@ -9,7 +9,10 @@ const {
   handlePSQL404s
 } = require("./controllers");
 
+
 const app = express();
+
+app.use(express.json());
 
 app.get("/api/topics", getTopics);
 
@@ -34,16 +37,18 @@ app.use((err, req, res, next) => {
     handlePSQL400s(res)
   } else if ((err.code = "23503")) {
     handlePSQL404s(res)
-  }
-  next(err);
-});
-
-  if (err.msg !== undefined) {
-    res.status(err.status).send({ msg: err.msg });
   } else {
     next(err);
   }
 });
+
+app.use((err, req, res, next) => {
+  if (err.msg !== undefined) {
+    res.status(err.status).send({ msg: err.msg });
+  } else {
+    next(err);
+  };
+})
 
 app.use((err, req, res, next) => {
   res.status(500)
