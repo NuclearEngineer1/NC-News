@@ -31,27 +31,35 @@ exports.selectArticles = () => {
   });
 };
 
-exports.selectArticleById = (req) => {
+exports.selectArticleById = (req, res) => {
   const article_id = req.params.article_id;
   return db
     .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
     .then((article) => {
-      return article.rows;
+      if (article.rowCount === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "article does not exist",
+        });
+      } else {
+        return { article: article.rows };
+      }
     });
 };
 
 exports.selectCommentsByArticleId = (req) => {
   const article_id = req.params.article_id;
-  return db
-    .query("SELECT * FROM comments WHERE article_id = $1", [article_id])
-    .then((comments) => {
-      if (comments.rowCount === 0) {
+  const commentQuery = db.query("SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC", [article_id])
+  const articleQuery = db.query("SELECT * FROM articles WHERE article_id = $1", [article_id])
+  return Promise.all([commentQuery, articleQuery])
+    .then((queryArray) => {
+      if (queryArray[1].rowCount === 0) {
         return Promise.reject({
           status: 404,
-          msg: "either the article does not exist or it has no comments",
+          msg: "article not found",
         });
       } else {
-        return comments.rows;
+        return queryArray[0].rows;
       }
     });
 };
