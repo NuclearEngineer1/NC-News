@@ -146,5 +146,16 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(comments).toEqual([])
       });
   });
-})
-
+    test("responds with 404 when user does not exist", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({
+          username: "madman123",
+          body: "this article sucks",
+        })
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("not found");
+        });
+    });
+});

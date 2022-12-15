@@ -3,7 +3,7 @@ const {
   selectArticles,
   selectArticleById,
   selectCommentsByArticleId,
-  insertCommentByArticleId
+  insertCommentByArticleId,
 } = require("./models");
 
 exports.getTopics = (req, res, next) => {
@@ -47,7 +47,9 @@ exports.getCommentsByArticleId = (req, res, next) => {
 };
 
 exports.postCommentByArticleId = (req, res, next) => {
-  insertCommentByArticleId(req)
+  const article_id = req.params.article_id
+  const postRequest = {...req.body}
+  insertCommentByArticleId(article_id, postRequest)
     .then((comment) => {
       res.status(201);
       res.send(comment);
@@ -55,4 +57,14 @@ exports.postCommentByArticleId = (req, res, next) => {
     .catch((err) => {
       next(err);
     });
+};
+
+exports.handlePSQL400s = (res) => {
+  res.status(400);
+  res.send({ msg: "bad request" });
+};
+
+exports.handlePSQL404s = (res) => {
+  res.status(404);
+  res.send({ msg: "not found" });
 };
