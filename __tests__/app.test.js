@@ -291,6 +291,14 @@ describe("POST /api/articles/:article_id/comments", () => {
 });
 
 
+describe("DELETE /api/comments/:comment_id", () => {
+  test("returns 204 no content", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({ body: response}) => {
+        expect(response).toEqual({});
+
 describe("GET /api/users", () => {
   test("returns 200 and a list of users", () => {
     return request(app)
@@ -362,5 +370,22 @@ describe("PATCH /api/articles/:article_id", () => {
       .then(({ body: { msg } }) => {
         expect(msg).toBe("bad request");
       });
+
   });
+  test("returns 400 when invalid comment_id", () => { 
+    return request(app)
+      .delete("/api/comments/banana")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe('bad request')
+      })
+  })
+    test("returns 404 when comment not found", () => { 
+    return request(app)
+      .delete("/api/comments/10000")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe('not found')
+      })
+  })
 });

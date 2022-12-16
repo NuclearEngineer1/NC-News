@@ -5,6 +5,7 @@ const {
   selectCommentsByArticleId,
   insertCommentByArticleId,
   selectUsers,
+  deleteCommentModel,
   updateVotesByArticleId
 } = require("./models");
 
@@ -49,7 +50,6 @@ exports.getCommentsByArticleId = (req, res, next) => {
     });
 };
 
-
 exports.postCommentByArticleId = (req, res, next) => {
   const article_id = req.params.article_id;
   const postRequest = { ...req.body };
@@ -77,10 +77,22 @@ exports.patchVotesByArticleId = (req, res, next) => {
 };
 
 exports.getUsers = (req, res, next) => {
-  const queries = { ...req.query }
+  const queries = { ...req.query };
   selectUsers(queries)
     .then((users) => {
       res.send({ users });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteComment = (req, res, next) => {
+  const comment_id = req.params.comment_id;
+  deleteCommentModel(comment_id)
+    .then(() => {
+      res.status(204);
+      res.send({});
     })
     .catch((err) => {
       next(err);
