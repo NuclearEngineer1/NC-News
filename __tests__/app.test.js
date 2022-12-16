@@ -55,7 +55,66 @@ describe("GET /api/articles", () => {
         });
       });
   });
-});
+  test("returns 200 and relevant article when queried", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&sort_by=article_id&order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("article_id")
+        expect(articles).toHaveLength(11);
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: "mitch",
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("defaults to descending date when only topic query given", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", {
+          descending: true,
+          coerce: true,
+        });
+      });
+  });
+  test("returns 400 for invalid query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&sort_by=temperament&order=sideways")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe('bad request')
+
+      });
+  });
+  test("returns 404 for topic does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=emus")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual('not found')
+
+      });
+  })
+  test("returns 400 for invalid sort_by", () => {
+    return request(app)
+      .get("/api/articles?sort_by=banana")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual('bad request')
+      });
+  });
+})
 
 describe("GET /api/articles/:article_id", () => {
   test("responds with 200 and corresonding article", () => {
@@ -76,6 +135,7 @@ describe("GET /api/articles/:article_id", () => {
         );
       });
   });
+
   test("responds with 400 when given invalid article_id", () => {
     return request(app)
       .get("/api/articles/banana")
@@ -243,7 +303,7 @@ describe("GET /api/users", () => {
             expect.objectContaining({
               username: expect.any(String),
               name: expect.any(String),
-              avatar_url: expect.any(String)
+              avatar_url: expect.any(String),
             })
           );
         });
