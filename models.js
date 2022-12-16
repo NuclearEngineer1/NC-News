@@ -10,11 +10,19 @@ exports.selectTopics = () => {
 exports.selectArticles = (queries) => {
   const SQLArray = [];
   let SQL = "SELECT * FROM articles;";
-  let validSort_by = ['title', 'topic', 'author', 'body', 'created_at', 'votes', 'article_id']
-  let validOrder = ['asc', 'desc']
+  let validSort_by = [
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "article_id",
+  ];
+  let validOrder = ["asc", "desc"];
 
   if (queries.sort_by && !validSort_by.includes(queries.sort_by)) {
-    return Promise.reject({ status: 400, msg: 'bad request' })
+    return Promise.reject({ status: 400, msg: "bad request" });
   } else if (queries.order && !validOrder.includes(queries.order)) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
@@ -64,16 +72,18 @@ exports.selectArticles = (queries) => {
   ) {
     SQL = "SELECT * FROM articles ORDER BY $1 desc";
     SQLArray.push(queries.sort_by);
-  } else if (Object.keys(queries).length === 3 && queries.order === "asc" || queries.order) {
-    SQL = "SELECT * FROM articles WHERE topic = $1 ORDER BY $2 asc;"
-    SQLArray.push(queries.topic, queries.sort_by)
+  } else if (
+    (Object.keys(queries).length === 3 && queries.order === "asc") ||
+    queries.order
+  ) {
+    SQL = "SELECT * FROM articles WHERE topic = $1 ORDER BY $2 asc;";
+    SQLArray.push(queries.topic, queries.sort_by);
   } else if (Object.keys(queries).length === 3 && queries.order === "desc") {
     SQL = "SELECT * FROM articles WHERE topic = $1 ORDER BY $2 desc;";
     SQLArray.push(queries.topic, queries.sort_by);
   }
 
   let articleQuery = db.query(SQL, SQLArray);
-
 
   const promiseArray = [
     articleQuery,
@@ -102,18 +112,20 @@ exports.selectArticles = (queries) => {
 
 exports.selectArticleById = (req, res) => {
   const article_id = req.params.article_id;
-  return db
-    .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
-    .then((article) => {
-      if (article.rowCount === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: "article does not exist",
-        });
-      } else {
-        return { article: article.rows };
-      }
-    });
+  articleQuery = db.query("SELECT * FROM articles WHERE article_id = $1", [
+    article_id,
+  ]);
+  commentQuery = db.query(
+   "SELECT article_id, count(article_id) AS comment_count FROM comments WHERE article_id = $1 GROUP BY article_id;", [article_id]
+  );
+
+  return Promise.all([articleQuery, commentQuery]).then((resultArray) => {
+    if (resultArray[0].rowCount === 0) {
+      return Promise.reject({status:404, msg:'not found'})
+    }
+    resultArray[0].rows[0].comment_count = resultArray[1].rows[0].comment_count
+    return resultArray[0].rows[0]
+  })
 };
 
 exports.selectCommentsByArticleId = (req) => {

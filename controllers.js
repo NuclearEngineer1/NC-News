@@ -30,8 +30,8 @@ exports.getArticles = (req, res, next) => {
 
 exports.getArticleById = (req, res, next) => {
   selectArticleById(req)
-    .then((response) => {
-      res.send(response);
+    .then((article) => { 
+      res.send(article)
     })
     .catch((err) => {
       next(err);
@@ -44,6 +44,7 @@ exports.getCommentsByArticleId = (req, res, next) => {
       res.send({ comments });
     })
     .catch((err) => {
+      
       next(err);
     });
 };
