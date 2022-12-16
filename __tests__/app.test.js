@@ -289,6 +289,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
+
 describe("GET /api/users", () => {
   test("returns 200 and a list of users", () => {
     return request(app)
@@ -306,6 +307,59 @@ describe("GET /api/users", () => {
             })
           );
         });
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("responds with 200 and updated article", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({
+        inc_votes: 5,
+      })
+      .expect(200)
+      .then(({ body: article }) => {
+        expect(article.votes).toBe(105);
+      });
+  });
+  test("responds with 400 when given invalid article_id", () => {
+    return request(app)
+      .patch("/api/articles/banana")
+      .send({
+        inc_votes: 5,
+      })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("responds with 404 when given valid but non existent article_id", () => {
+    return request(app)
+      .patch("/api/articles/1000000")
+      .send({
+        inc_votes: 5,
+      })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+  test("responds with 400 when missing a property", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({})
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("responds with 400 when property is wrong data type", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({
+        inc_votes: null
+      })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
       });
   });
 });

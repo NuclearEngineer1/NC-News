@@ -146,6 +146,25 @@ exports.insertCommentByArticleId = (article_id, postRequest) => {
   return db.query(commentInsertSQL).then((comment) => {
     return comment.rows[0];
   });
+
+};
+
+exports.updateVotesByArticleId = (article_id, postRequest) => {
+  return db
+    .query(
+      "UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *",
+      [postRequest.inc_votes, article_id]
+    )
+    .then((article) => {
+      if (article.rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "not found",
+        });
+      } else {
+        return article.rows[0];
+      }
+    });
 };
 
 exports.selectUsers = () => {
