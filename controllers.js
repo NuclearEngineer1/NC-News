@@ -4,7 +4,8 @@ const {
   selectArticleById,
   selectCommentsByArticleId,
   insertCommentByArticleId,
-  selectUsers
+  selectUsers,
+  deleteCommentModel,
 } = require("./models");
 
 exports.getTopics = (req, res, next) => {
@@ -29,8 +30,8 @@ exports.getArticles = (req, res, next) => {
 
 exports.getArticleById = (req, res, next) => {
   selectArticleById(req)
-    .then((response) => { 
-      res.send(response)
+    .then((response) => {
+      res.send(response);
     })
     .catch((err) => {
       next(err);
@@ -47,10 +48,9 @@ exports.getCommentsByArticleId = (req, res, next) => {
     });
 };
 
-
 exports.postCommentByArticleId = (req, res, next) => {
-  const article_id = req.params.article_id
-  const postRequest = { ...req.body }
+  const article_id = req.params.article_id;
+  const postRequest = { ...req.body };
   insertCommentByArticleId(article_id, postRequest)
     .then((comment) => {
       res.status(201);
@@ -62,10 +62,22 @@ exports.postCommentByArticleId = (req, res, next) => {
 };
 
 exports.getUsers = (req, res, next) => {
-  const queries = { ...req.query }
+  const queries = { ...req.query };
   selectUsers(queries)
     .then((users) => {
       res.send({ users });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteComment = (req, res, next) => {
+  const comment_id = req.params.comment_id;
+  deleteCommentModel(comment_id)
+    .then(() => {
+      res.status(204);
+      res.send({});
     })
     .catch((err) => {
       next(err);

@@ -289,23 +289,30 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe("GET /api/users", () => {
-  test("returns 200 and a list of users", () => {
+describe("DELETE /api/comments/:comment_id", () => {
+  test("returns 204 no content", () => {
     return request(app)
-      .get("/api/users")
-      .expect(200)
-      .then(({ body: { users } }) => {
-        expect(users).toBeInstanceOf(Array);
-        expect(users).toHaveLength(4);
-        users.forEach((users) => {
-          expect(users).toEqual(
-            expect.objectContaining({
-              username: expect.any(String),
-              name: expect.any(String),
-              avatar_url: expect.any(String),
-            })
-          );
-        });
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({ body: response}) => {
+        expect(response).toEqual({});
       });
+
   });
+  test("returns 400 when invalid comment_id", () => { 
+    return request(app)
+      .delete("/api/comments/banana")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe('bad request')
+      })
+  })
+    test("returns 404 when comment not found", () => { 
+    return request(app)
+      .delete("/api/comments/10000")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe('not found')
+      })
+  })
 });
