@@ -18,7 +18,7 @@ exports.getTopics = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  selectArticles()
+  selectArticles(req.query)
     .then((articles) => {
       res.send({ articles });
     })
@@ -57,13 +57,13 @@ exports.postCommentByArticleId = (req, res, next) => {
       res.send(comment);
     })
     .catch((err) => {
-      console.log(err)
       next(err);
     });
 };
 
 exports.getUsers = (req, res, next) => {
-  selectUsers()
+  const queries = { ...req.query }
+  selectUsers(queries)
     .then((users) => {
       res.send({ users });
     })
