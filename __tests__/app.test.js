@@ -88,25 +88,33 @@ describe("GET /api/articles", () => {
         });
       });
   });
-    test("returns 400 for invalid query", () => {
-      return request(app)
-        .get("/api/articles?topic=mitch&sort_by=temperament&order=sideways")
-        .expect(400)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe('bad request')
+  test("returns 400 for invalid query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&sort_by=temperament&order=sideways")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe('bad request')
 
-        });
-    });
-      test("returns [] for topic does not exist", () => {
-      return request(app)
-        .get("/api/articles?topic=emus")
-        .expect(200)
-        .then(({ body: { articles } }) => {
-          expect(articles).toEqual([])
+      });
+  });
+  test("returns 404 for topic does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=emus")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual('not found')
 
-        });
-    });
-});
+      });
+  })
+  test("returns 400 for invalid sort_by", () => {
+    return request(app)
+      .get("/api/articles?sort_by=banana")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual('bad request')
+      });
+  });
+})
 
 describe("GET /api/articles/:article_id", () => {
   test("responds with 200 and corresonding article", () => {
@@ -282,6 +290,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
+
 describe("GET /api/users", () => {
   test("returns 200 and a list of users", () => {
     return request(app)
@@ -299,6 +308,59 @@ describe("GET /api/users", () => {
             })
           );
         });
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("responds with 200 and updated article", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({
+        inc_votes: 5,
+      })
+      .expect(200)
+      .then(({ body: article }) => {
+        expect(article.votes).toBe(105);
+      });
+  });
+  test("responds with 400 when given invalid article_id", () => {
+    return request(app)
+      .patch("/api/articles/banana")
+      .send({
+        inc_votes: 5,
+      })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("responds with 404 when given valid but non existent article_id", () => {
+    return request(app)
+      .patch("/api/articles/1000000")
+      .send({
+        inc_votes: 5,
+      })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+  test("responds with 400 when missing a property", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({})
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("responds with 400 when property is wrong data type", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({
+        inc_votes: null
+      })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
       });
   });
 });
