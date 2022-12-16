@@ -1,3 +1,4 @@
+const { application } = require("express");
 const express = require("express");
 const {
   getTopics,
@@ -10,6 +11,7 @@ const {
   getUsers,
   deleteComment,
   patchVotesByArticleId,
+  handle404Paths
 } = require("./controllers");
 
 
@@ -34,6 +36,8 @@ app.get("/api/users", getUsers);
 app.delete("/api/comments/:comment_id", deleteComment)
 
 app.patch("/api/articles/:article_id", patchVotesByArticleId)
+
+app.all('*', handle404Paths)
 
 
 app.use((err, req, res, next) => {

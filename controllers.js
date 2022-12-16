@@ -99,6 +99,11 @@ exports.deleteComment = (req, res, next) => {
     });
 };
 
+exports.handle404Paths = (req, res, next) => {
+  res.status(404)
+  res.send({msg: 'not found'})
+}
+
 exports.handlePSQL400s = (res) => {
   res.status(400);
   res.send({ msg: "bad request" });
