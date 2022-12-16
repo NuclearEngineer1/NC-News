@@ -83,6 +83,9 @@ exports.selectArticles = (queries) => {
   ];
 
   return Promise.all(promiseArray).then((resultArray) => {
+    if (resultArray[0].rows.length === 0) {
+      return Promise.reject({status: 404, msg: 'not found'})
+    }
     resultArray[0].rows.forEach((article) => {
       const commentsFound = false;
       resultArray[1].rows.forEach((count) => {

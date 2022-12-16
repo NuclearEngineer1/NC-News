@@ -88,25 +88,33 @@ describe("GET /api/articles", () => {
         });
       });
   });
-    test("returns 400 for invalid query", () => {
-      return request(app)
-        .get("/api/articles?topic=mitch&sort_by=temperament&order=sideways")
-        .expect(400)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe('bad request')
+  test("returns 400 for invalid query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&sort_by=temperament&order=sideways")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe('bad request')
 
-        });
-    });
-      test("returns [] for topic does not exist", () => {
-      return request(app)
-        .get("/api/articles?topic=emus")
-        .expect(200)
-        .then(({ body: { articles } }) => {
-          expect(articles).toEqual([])
+      });
+  });
+  test("returns 404 for topic does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=emus")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual('not found')
 
-        });
-    });
-});
+      });
+  })
+  test("returns 400 for invalid sort_by", () => {
+    return request(app)
+      .get("/api/articles?sort_by=banana")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual('bad request')
+      });
+  });
+})
 
 describe("GET /api/articles/:article_id", () => {
   test("responds with 200 and corresonding article", () => {
