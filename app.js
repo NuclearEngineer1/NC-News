@@ -8,7 +8,8 @@ const {
   handlePSQL400s,
   handlePSQL404s,
   getUsers,
-  deleteComment
+  deleteComment,
+  patchVotesByArticleId,
 } = require("./controllers");
 
 
@@ -26,9 +27,14 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
+
 app.get("/api/users", getUsers);
 
+
 app.delete("/api/comments/:comment_id", deleteComment)
+
+app.patch("/api/articles/:article_id", patchVotesByArticleId)
+
 
 app.use((err, req, res, next) => {
   if (err.msg) {

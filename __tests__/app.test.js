@@ -119,18 +119,19 @@ describe("GET /api/articles", () => {
 describe("GET /api/articles/:article_id", () => {
   test("responds with 200 and corresonding article", () => {
     return request(app)
-      .get("/api/articles/7")
+      .get("/api/articles/1")
       .expect(200)
-      .then(({ body: { article } }) => {
-        expect(article[0]).toEqual(
+      .then(({ body: article }) => {
+        expect(article).toEqual(
           expect.objectContaining({
-            article_id: 7,
-            title: "Z",
+            article_id: 1,
+            title: "Living in the shadow of a great man",
             topic: "mitch",
-            author: "icellusedkars",
-            body: "I was hungry.",
-            created_at: "2020-01-07T14:08:00.000Z",
-            votes: 0,
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 100,
+            comment_count: "11"
           })
         );
       });
@@ -149,7 +150,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/1000000")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("article does not exist");
+        expect(msg).toBe("not found");
       });
   });
 });
@@ -289,6 +290,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
+
 describe("DELETE /api/comments/:comment_id", () => {
   test("returns 204 no content", () => {
     return request(app)
@@ -296,6 +298,77 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(204)
       .then(({ body: response}) => {
         expect(response).toEqual({});
+
+describe("GET /api/users", () => {
+  test("returns 200 and a list of users", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        expect(users).toBeInstanceOf(Array);
+        expect(users).toHaveLength(4);
+        users.forEach((users) => {
+          expect(users).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("responds with 200 and updated article", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({
+        inc_votes: 5,
+      })
+      .expect(200)
+      .then(({ body: article }) => {
+        expect(article.votes).toBe(105);
+      });
+  });
+  test("responds with 400 when given invalid article_id", () => {
+    return request(app)
+      .patch("/api/articles/banana")
+      .send({
+        inc_votes: 5,
+      })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("responds with 404 when given valid but non existent article_id", () => {
+    return request(app)
+      .patch("/api/articles/1000000")
+      .send({
+        inc_votes: 5,
+      })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+  test("responds with 400 when missing a property", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({})
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("responds with 400 when property is wrong data type", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({
+        inc_votes: null
+      })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
       });
 
   });
