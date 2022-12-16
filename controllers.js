@@ -4,6 +4,7 @@ const {
   selectArticleById,
   selectCommentsByArticleId,
   insertCommentByArticleId,
+  selectUsers,
   updateVotesByArticleId
 } = require("./models");
 
@@ -47,6 +48,7 @@ exports.getCommentsByArticleId = (req, res, next) => {
     });
 };
 
+
 exports.postCommentByArticleId = (req, res, next) => {
   const article_id = req.params.article_id;
   const postRequest = { ...req.body };
@@ -70,6 +72,16 @@ exports.patchVotesByArticleId = (req, res, next) => {
     })
     .catch((err) => {
       console.log(err)
+      next(err);
+    });
+};
+
+exports.getUsers = (req, res, next) => {
+  selectUsers()
+    .then((users) => {
+      res.send({ users });
+    })
+    .catch((err) => {
       next(err);
     });
 };
