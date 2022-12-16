@@ -23,5 +23,18 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an object representing the article matching the given ID",
+    "queries": [],
+    "exampleResponse": {
+        {
+          "title": "Seafood substitutions are increasing",
+          "topic": "cooking",
+          "author": "weegembump",
+          "body": "Text from the article..",
+          "created_at": 1527695953341
+        }
+    }
   }
-}
+

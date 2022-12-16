@@ -37,7 +37,7 @@ app.delete("/api/comments/:comment_id", deleteComment)
 
 app.patch("/api/articles/:article_id", patchVotesByArticleId)
 
-app.all('*', handle404Paths)
+app.all('/', handle404Paths)
 
 
 app.use((err, req, res, next) => {
