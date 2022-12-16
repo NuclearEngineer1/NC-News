@@ -49,19 +49,24 @@ exports.selectArticleById = (req, res) => {
 
 exports.selectCommentsByArticleId = (req) => {
   const article_id = req.params.article_id;
-  const commentQuery = db.query("SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC", [article_id])
-  const articleQuery = db.query("SELECT * FROM articles WHERE article_id = $1", [article_id])
-  return Promise.all([commentQuery, articleQuery])
-    .then((queryArray) => {
-      if (queryArray[1].rowCount === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: "article not found",
-        });
-      } else {
-        return queryArray[0].rows;
-      }
-    });
+  const commentQuery = db.query(
+    "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC",
+    [article_id]
+  );
+  const articleQuery = db.query(
+    "SELECT * FROM articles WHERE article_id = $1",
+    [article_id]
+  );
+  return Promise.all([commentQuery, articleQuery]).then((queryArray) => {
+    if (queryArray[1].rowCount === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: "article not found",
+      });
+    } else {
+      return queryArray[0].rows;
+    }
+  });
 };
 
 exports.insertCommentByArticleId = (article_id, postRequest) => {
@@ -70,10 +75,26 @@ exports.insertCommentByArticleId = (article_id, postRequest) => {
     [[postRequest.body, postRequest.username, article_id]]
   );
   return db.query(commentInsertSQL).then((comment) => {
-    return comment.rows[0]
-  }
-  );
+    return comment.rows[0];
+  });
+};
 
+exports.updateVotesByArticleId = (article_id, postRequest) => {
+  return db
+    .query(
+      "UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *",
+      [postRequest.inc_votes, article_id]
+    )
+    .then((article) => {
+      if (article.rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "not found",
+        });
+      } else {
+        return article.rows[0];
+      }
+    });
 };
 
 exports.selectUsers = () => {
