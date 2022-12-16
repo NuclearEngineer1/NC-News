@@ -60,7 +60,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles?topic=mitch&sort_by=article_id&order=asc")
       .expect(200)
       .then(({ body: { articles } }) => {
-        expect(articles).toBeSortedBy("article_id")
+        expect(articles).toBeSortedBy("article_id");
         expect(articles).toHaveLength(11);
         articles.forEach((article) => {
           expect(article).toEqual(
@@ -93,8 +93,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles?topic=mitch&sort_by=temperament&order=sideways")
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe('bad request')
-
+        expect(msg).toBe("bad request");
       });
   });
   test("returns 404 for topic does not exist", () => {
@@ -102,19 +101,18 @@ describe("GET /api/articles", () => {
       .get("/api/articles?topic=emus")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toEqual('not found')
-
+        expect(msg).toEqual("not found");
       });
-  })
+  });
   test("returns 400 for invalid sort_by", () => {
     return request(app)
       .get("/api/articles?sort_by=banana")
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toEqual('bad request')
+        expect(msg).toEqual("bad request");
       });
   });
-})
+});
 
 describe("GET /api/articles/:article_id", () => {
   test("responds with 200 and corresonding article", () => {
@@ -131,7 +129,7 @@ describe("GET /api/articles/:article_id", () => {
             body: "I find this existence challenging",
             created_at: "2020-07-09T20:11:00.000Z",
             votes: 100,
-            comment_count: "11"
+            comment_count: "11",
           })
         );
       });
@@ -290,8 +288,6 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-
-
 describe("GET /api/users", () => {
   test("returns 200 and a list of users", () => {
     return request(app)
@@ -309,91 +305,100 @@ describe("GET /api/users", () => {
             })
           );
         });
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("responds with 200 and updated article", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({
+        inc_votes: 5,
       })
-  })
-})
+      .expect(200)
+      .then(({ body: article }) => {
+        expect(article.votes).toBe(105);
+      });
+  });
+  test("responds with 400 when given invalid article_id", () => {
+    return request(app)
+      .patch("/api/articles/banana")
+      .send({
+        inc_votes: 5,
+      })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("responds with 404 when given valid but non existent article_id", () => {
+    return request(app)
+      .patch("/api/articles/1000000")
+      .send({
+        inc_votes: 5,
+      })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+  test("responds with 400 when missing a property", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({})
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("responds with 400 when property is wrong data type", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({
+        inc_votes: null,
+      })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+});
 
-        describe("PATCH /api/articles/:article_id", () => {
-          test("responds with 200 and updated article", () => {
-            return request(app)
-              .patch("/api/articles/1")
-              .send({
-                inc_votes: 5,
-              })
-              .expect(200)
-              .then(({ body: article }) => {
-                expect(article.votes).toBe(105);
-              });
-          });
-          test("responds with 400 when given invalid article_id", () => {
-            return request(app)
-              .patch("/api/articles/banana")
-              .send({
-                inc_votes: 5,
-              })
-              .expect(400)
-              .then(({ body: { msg } }) => {
-                expect(msg).toBe("bad request");
-              });
-          });
-          test("responds with 404 when given valid but non existent article_id", () => {
-            return request(app)
-              .patch("/api/articles/1000000")
-              .send({
-                inc_votes: 5,
-              })
-              .expect(404)
-              .then(({ body: { msg } }) => {
-                expect(msg).toBe("not found");
-              });
-          });
-          test("responds with 400 when missing a property", () => {
-            return request(app)
-              .patch("/api/articles/1")
-              .send({})
-              .expect(400)
-              .then(({ body: { msg } }) => {
-                expect(msg).toBe("bad request");
-              });
-          });
-          test("responds with 400 when property is wrong data type", () => {
-            return request(app)
-              .patch("/api/articles/1")
-              .send({
-                inc_votes: null
-              })
-              .expect(400)
-              .then(({ body: { msg } }) => {
-                expect(msg).toBe("bad request");
-              });
+describe("DELETE /api/comments/:comment_id", () => {
+  test("returns 204 no content", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({ body: response }) => {
+        expect(response).toEqual({});
+      });
+  });
+  test("returns 400 when invalid comment_id", () => {
+    return request(app)
+      .delete("/api/comments/banana")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("returns 404 when comment not found", () => {
+    return request(app)
+      .delete("/api/comments/10000")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+});
 
-          });
-        })
-  
-          describe("DELETE /api/comments/:comment_id", () => {
-            test("returns 204 no content", () => {
-              return request(app)
-                .delete("/api/comments/1")
-                .expect(204)
-                .then(({ body: response }) => {
-                  expect(response).toEqual({});
-                })
-            })
-            test("returns 400 when invalid comment_id", () => {
-              return request(app)
-                .delete("/api/comments/banana")
-                .expect(400)
-                .then(({ body: { msg } }) => {
-                  expect(msg).toBe('bad request')
-                })
-            })
-            test("returns 404 when comment not found", () => {
-              return request(app)
-                .delete("/api/comments/10000")
-                .expect(404)
-                .then(({ body: { msg } }) => {
-                  expect(msg).toBe('not found')
-                })
-            })
-          })
-        
+describe("*", () => {
+  test("returns 404 when given an invalid end point", () => {
+    return request(app)
+      .get("/banana")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+});
