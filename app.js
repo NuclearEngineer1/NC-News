@@ -1,6 +1,6 @@
 const { application } = require("express");
 const express = require("express");
-const cors = require('cores')
+const cors = require("cors");
 const {
   getTopics,
   getArticles,
@@ -12,15 +12,12 @@ const {
   getUsers,
   deleteComment,
   patchVotesByArticleId,
-  handle404Paths
+  handle404Paths,
 } = require("./controllers");
 
-
 const app = express();
-
+app.use(cors());
 app.use(express.json());
-
-app.use(cors())
 
 app.get("/api/topics", getTopics);
 
@@ -32,16 +29,13 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
-
 app.get("/api/users", getUsers);
 
+app.delete("/api/comments/:comment_id", deleteComment);
 
-app.delete("/api/comments/:comment_id", deleteComment)
+app.patch("/api/articles/:article_id", patchVotesByArticleId);
 
-app.patch("/api/articles/:article_id", patchVotesByArticleId)
-
-app.all('*', handle404Paths)
-
+app.all("*", handle404Paths);
 
 app.use((err, req, res, next) => {
   if (err.msg) {
@@ -53,9 +47,9 @@ app.use((err, req, res, next) => {
 
 app.use((err, req, res, next) => {
   if (err.code === "22P02" || err.code === "23502") {
-    handlePSQL400s(res)
+    handlePSQL400s(res);
   } else if ((err.code = "23503")) {
-    handlePSQL404s(res)
+    handlePSQL404s(res);
   } else {
     next(err);
   }
@@ -66,11 +60,11 @@ app.use((err, req, res, next) => {
     res.status(err.status).send({ msg: err.msg });
   } else {
     next(err);
-  };
-})
+  }
+});
 
 app.use((err, req, res, next) => {
-  res.status(500)
+  res.status(500);
   res.send({ msg: "Internal Server Error" });
 });
 
