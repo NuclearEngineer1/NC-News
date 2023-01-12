@@ -77,12 +77,14 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test.only("returns 200 and relevant article when queried with JUST a sort_by query", () => {
+  test("returns 200 and relevant article when queried with JUST a sort_by query", () => {
     return request(app)
-      .get("/api/articles?sort_by=article_id")
+      .get("/api/articles?sort_by=topic")
       .expect(200)
       .then(({ body: { articles } }) => {
-        expect(articles).toBeSortedBy("article_id");
+        expect(articles).toBeSortedBy("topic", {
+          descending: true
+        });
         expect(articles).toHaveLength(12);
         articles.forEach((article) => {
           expect(article).toEqual(

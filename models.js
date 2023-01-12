@@ -8,7 +8,7 @@ exports.selectTopics = () => {
 };
 
 exports.selectArticles = (queries) => {
-  let SQLArray = [];
+  const SQLArray = [];
   let SQL = "SELECT * FROM articles;";
   let validSort_by = [
     "title",
@@ -31,8 +31,7 @@ exports.selectArticles = (queries) => {
     SQL = "SELECT * FROM articles WHERE topic = $1 ORDER BY created_at DESC";
     SQLArray.push(queries.topic);
   } else if (Object.keys(queries).length === 1 && queries.sort_by) {
-    SQL = "SELECT * FROM articles ORDER BY $1 DESC";
-    SQLArray.push(queries.sort_by);
+    SQL = `SELECT * FROM articles ORDER BY ${queries.sort_by} DESC`
   } else if (Object.keys(queries).length === 1 && queries.order === "asc") {
     SQL = "SELECT * FROM articles ORDER BY created_at ASC";
   } else if (Object.keys(queries).length === 1 && queries.order === "desc") {
@@ -42,45 +41,43 @@ exports.selectArticles = (queries) => {
     queries.topic &&
     queries.sort_by
   ) {
-    SQL = "SELECT * FROM articles WHERE topic = $1 ORDER BY $2 DESC";
-    SQLArray.push(queries.topic, queries.sort_by);
+    SQL = `SELECT * FROM articles WHERE topic = $1 ORDER BY ${queries.sort_by} DESC`;
+    SQLArray.push(queries.topic);
   } else if (
     Object.keys(queries).length === 2 &&
     queries.topic &&
     queries.order === "ASC"
   ) {
-    SQL = "SELECT * FROM articles WHERE topic = $1 ORDER BY $2 ASC";
-    SQLArray.push(queries.topic, queries.sort_by);
+    SQL = `SELECT * FROM articles WHERE topic = $1 ORDER BY ${queries.sort_by} ASC`;
+    SQLArray.push(queries.topic);
   } else if (
     Object.keys(queries).length === 2 &&
     queries.topic &&
     queries.order === "DESC"
   ) {
-    SQL = "SELECT * FROM articles WHERE topic = $1 ORDER BY $2 DESC";
-    SQLArray.push(queries.topic, queries.sort_by);
+    SQL = `SELECT * FROM articles WHERE topic = $1 ORDER BY ${queries.sort_by} DESC`;
+    SQLArray.push(queries.topic);
   } else if (
     Object.keys(queries).length === 2 &&
     queries.sort_by &&
     queries.order === "asc"
   ) {
-    SQL = "SELECT * FROM articles ORDER BY $1 asc";
-    SQLArray.push(queries.sort_by);
+    SQL = `SELECT * FROM articles ORDER BY ${queries.sort_by} asc`;
   } else if (
     Object.keys(queries).length === 2 &&
     queries.sort_by &&
     queries.order === "desc"
   ) {
-    SQL = "SELECT * FROM articles ORDER BY $1 desc";
-    SQLArray.push(queries.sort_by);
+    SQL = `SELECT * FROM articles ORDER BY ${queries.sort_by} desc`;
   } else if (
     (Object.keys(queries).length === 3 && queries.order === "asc") ||
     queries.order
   ) {
-    SQL = "SELECT * FROM articles WHERE topic = $1 ORDER BY $2 asc;";
-    SQLArray.push(queries.topic, queries.sort_by);
+    SQL = `SELECT * FROM articles WHERE topic = $1 ORDER BY ${queries.sort_by} asc`
+    SQLArray.push(queries.topic);
   } else if (Object.keys(queries).length === 3 && queries.order === "desc") {
-    SQL = "SELECT * FROM articles WHERE topic = $1 ORDER BY $2 desc;";
-    SQLArray.push(queries.topic, queries.sort_by);
+    SQL = `SELECT * FROM articles WHERE topic = $1 ORDER BY ${queries.sort_by} desc;`;
+    SQLArray.push(queries.topic);
   }
 
   let articleQuery = db.query(SQL, SQLArray);
