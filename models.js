@@ -18,6 +18,7 @@ exports.selectArticles = (queries) => {
     "created_at",
     "votes",
     "article_id",
+    "comment_count"
   ];
   let validOrder = ["asc", "desc"];
 
