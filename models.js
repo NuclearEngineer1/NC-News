@@ -46,14 +46,14 @@ exports.selectArticles = (queries) => {
   } else if (
     Object.keys(queries).length === 2 &&
     queries.topic &&
-    queries.order === "ASC"
+    queries.order === "asc"
   ) {
     SQL = `SELECT * FROM articles WHERE topic = $1 ORDER BY ${queries.sort_by} ASC`;
     SQLArray.push(queries.topic);
   } else if (
     Object.keys(queries).length === 2 &&
     queries.topic &&
-    queries.order === "DESC"
+    queries.order === "desc"
   ) {
     SQL = `SELECT * FROM articles WHERE topic = $1 ORDER BY ${queries.sort_by} DESC`;
     SQLArray.push(queries.topic);
