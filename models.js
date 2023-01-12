@@ -70,8 +70,7 @@ exports.selectArticles = (queries) => {
   ) {
     SQL = `SELECT * FROM articles ORDER BY ${queries.sort_by} desc`;
   } else if (
-    (Object.keys(queries).length === 3 && queries.order === "asc") ||
-    queries.order
+    (Object.keys(queries).length === 3 && queries.order === "asc")
   ) {
     SQL = `SELECT * FROM articles WHERE topic = $1 ORDER BY ${queries.sort_by} asc`
     SQLArray.push(queries.topic);
