@@ -77,6 +77,28 @@ describe("GET /api/articles", () => {
         });
       });
   });
+  test.only("returns 200 and relevant article when queried with JUST a sort_by query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("article_id");
+        expect(articles).toHaveLength(12);
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
   test("defaults to descending date when only topic query given", () => {
     return request(app)
       .get("/api/articles?topic=mitch")

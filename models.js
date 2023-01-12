@@ -8,7 +8,7 @@ exports.selectTopics = () => {
 };
 
 exports.selectArticles = (queries) => {
-  const SQLArray = [];
+  let SQLArray = [];
   let SQL = "SELECT * FROM articles;";
   let validSort_by = [
     "title",
@@ -31,7 +31,7 @@ exports.selectArticles = (queries) => {
     SQL = "SELECT * FROM articles WHERE topic = $1 ORDER BY created_at DESC";
     SQLArray.push(queries.topic);
   } else if (Object.keys(queries).length === 1 && queries.sort_by) {
-    SQL = "SELECT * FROM articles ORDER BY $2 DESC";
+    SQL = "SELECT * FROM articles ORDER BY $1 DESC";
     SQLArray.push(queries.sort_by);
   } else if (Object.keys(queries).length === 1 && queries.order === "asc") {
     SQL = "SELECT * FROM articles ORDER BY created_at ASC";
